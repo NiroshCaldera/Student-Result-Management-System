@@ -225,7 +225,31 @@ class MainWindow(ctk.CTk):
         self.refresh()
         messagebox.showinfo("Calculated", "Grades Calculated Successfully")
 
-    
+    def edit_marks(self):
+        selected = self.tree.focus()
+        if not selected:
+            messagebox.showwarning("Select Student", "Select a student to edit marks")
+            return
+        values = self.tree.item(selected, "values")
+        sid = int(values[0])
+        student = next((s for s in self.students if s.sid == sid), None)
+        if not student: return
+
+        win = ctk.CTkToplevel(self)
+        win.title(f"Edit Marks - {student.name}")
+        win.geometry("400x300")
+
+        entries = {}
+        ctk.CTkLabel(win, text=f"Editing Marks for {student.name}", font=("Segoe UI", 16, "bold")).pack(pady=10)
+
+        for sub in student.marks.keys():
+            frame = ctk.CTkFrame(win)
+            frame.pack(pady=4, padx=10, fill="x")
+            ctk.CTkLabel(frame, text=sub, width=100).pack(side="left", padx=5)
+            e = ctk.CTkEntry(frame, width=150)
+            e.insert(0, str(student.marks[sub]))
+            e.pack(side="left", padx=5)
+            entries[sub] = e
 
         def save_changes():
             try:
